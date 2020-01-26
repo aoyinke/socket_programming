@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WebSocket</title>
+</head>
+<body>
+    <h1>Char Room</h1>
+    <input type="text" id="sendTxt">
+    <button id="sendBtn">发送</button>
+</body>
+<script>
+    var websocket = new WebSocket("ws://localhost:3000/");
+    function showMessage(str,type){
+        var div = document.createElement('div');
+        div.innerHTML = str;
+        if(type == "entering"){
+            div.style.color = "blue"
+        }else if(type=="leaving"){
+            div.style.color = "red"
+        }
+        document.body.appendChild(div);
+    }
+    websocket.onopen = function(){
+        console.log('websocket open');
+        document.getElementById('sendBtn').onclick = function(){
+            var txt = document.getElementById("sendTxt").value;
+            if(txt){
+                websocket.send(txt)
+            }
+            
+        }
+
+    }
+    websocket.onclose = function(){
+        console.log("websocket closed");
+    }
+    websocket.onmessage = function(msg){
+        console.log(msg.data)
+        var msg = JSON.parse(msg.data);
+        showMessage(msg.data,msg.type)
+
+    }
+
+</script>
+</html>
